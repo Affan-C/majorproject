@@ -1,0 +1,199 @@
+<% layout("layouts/boilerplate") %> 
+
+<style>
+#filter {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  align-items: center;
+}
+
+#filter::-webkit-scrollbar {
+  display: none;
+}
+
+.filter {
+  min-width: 70px;
+  text-align: center;
+  opacity: 0.7;
+  flex-shrink: 0;
+  transition: 0.2s ease-in-out;
+}
+
+.filter:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.filter p {
+  font-size: 0.75rem;
+  margin-bottom: 0;
+}
+
+.active-filter {
+  opacity: 1 !important;
+  border-bottom: 2px solid black;
+}
+
+.tax-toggle {
+  min-width: 260px;
+  flex-shrink: 0;
+}
+
+.tax-toggle .toggle-box {
+  border: 1px solid #000;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 3rem;
+}
+
+.tax-toggle .form-check-input {
+  cursor: pointer;
+}
+
+.tax-toggle .form-check-label {
+  cursor: pointer;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
+
+#content{
+  padding-left: 0.5rem;
+}
+
+.listing-card {
+  border: none;
+  transition: 0.3s ease;
+}
+
+.listing-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  border-radius: 12px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 576px) {
+  .filter {
+    min-width: 60px;
+  }
+
+  .filter p {
+    font-size: 0.65rem;
+  }
+
+  .tax-toggle {
+    min-width: 200px;
+  }
+
+  .tax-toggle .form-check-label {
+    font-size: 0.75rem;
+  }
+}
+</style>
+
+<!-- Filter Section -->
+<div id="filter">
+
+  <a href="/listings?category=Trending"
+     class="filter text-decoration-none text-dark <%= category === 'Trending' ? 'active-filter' : '' %>">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p>Trending</p>
+  </a>
+
+  <a href="/listings?category=Rooms"
+     class="filter text-decoration-none text-dark <%= category === 'Rooms' ? 'active-filter' : '' %>">
+    <div><i class="fa-solid fa-bed"></i></div>
+    <p>Rooms</p>
+  </a>
+
+  <a href="/listings?category=Mountains"
+     class="filter text-decoration-none text-dark <%= category === 'Mountains' ? 'active-filter' : '' %>">
+    <div><i class="fa-solid fa-mountain"></i></div>
+    <p>Mountains</p>
+  </a>
+
+  <a href="/listings?category=Farms"
+     class="filter text-decoration-none text-dark <%= category === 'Farms' ? 'active-filter' : '' %>">
+    <div><i class="fa-solid fa-tractor"></i></div>
+    <p>Farms</p>
+  </a>
+
+  <a href="/listings"
+     class="filter text-decoration-none text-dark">
+    <div><i class="fa-solid fa-list"></i></div>
+    <p>All</p>
+  </a>
+
+  <div class="tax-toggle ms-auto">
+    <div class="toggle-box">
+      <div class="form-check form-switch m-0 d-flex align-items-center">
+        <input class="form-check-input me-2" type="checkbox" id="switchCheckDefault">
+        <label class="form-check-label" for="switchCheckDefault" id="content">
+          Display total after taxes
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Listings Grid -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mt-3">
+
+  <% if(allListings.length === 0) { %>
+
+    <div class="col-12 text-center mt-5">
+      <h4>No listings found </h4>
+      <% if(search) { %>
+        <p>Search result for "<b><%= search %></b>" not found.</p>
+      <% } %>
+    </div>
+
+  <% } %>
+
+  <% for(let listing of allListings) { %>
+    <div class="col">
+      <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
+        <div class="card h-100 listing-card">
+
+          <img 
+            src="<%= listing.image?.url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e' %>"
+            class="card-img-top img-fluid"
+            style="aspect-ratio: 4 / 3; object-fit: cover;"
+          >
+
+          <div class="card-body">
+            <p class="card-text">
+              <b><%= listing.title %></b><br>
+              ₹ <%= listing.price?.toLocaleString("en-IN") %> / night
+              <span class="tax-info"> +18% GST</span>
+            </p>
+          </div>
+
+        </div>
+      </a>
+    </div>
+  <% } %>
+
+</div>
+<script>
+let taxswitch = document.getElementById("switchCheckDefault");
+
+taxswitch.addEventListener("click", () => {
+  let taxInfo = document.getElementsByClassName("tax-info");
+  for(let info of taxInfo) {
+    if(info.style.display !== "inline") {
+      info.style.display = "inline";
+    } else {
+      info.style.display = "none";
+    }
+  }
+});
+</script>
